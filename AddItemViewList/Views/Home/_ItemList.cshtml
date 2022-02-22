@@ -1,0 +1,28 @@
+﻿@model AddItemViewList.Models.DataCountM;
+@using AddItemViewList.Models
+@{
+    Layout = null;
+}
+@foreach (AddList addList in Model.AddLists)
+{
+
+    <tr id="tr_@addList.ItemId">
+        <td>
+            @addList.ItemId
+        </td>
+        <td>
+            @addList.ItemName
+        </td>
+        <td>
+            @addList.ItemType
+        </td>
+        <td>
+            @addList.ItemPrice
+        </td>
+       
+        <td><button id="btn" class="btnSelect"><i class="fas fa-edit"></i>Edit</button></td>
+    </tr>
+    <input id="inCount" type="hidden" name="inCount" value="@Model.dataCount" />
+
+
+}

@@ -1,0 +1,153 @@
+﻿@model List<AddItemViewList.Models.AddList>;
+@using AddItemViewList.Models
+@{
+    ViewData["Title"] = "AddList";
+}
+
+
+<style>
+
+
+</style>
+  
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                
+                <form id="addItem">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <input id="ItemId" type="hidden" name="ItemId" />
+
+                    <input id="ItemName" name="ItemName" placeholder="Item Name..." class="mb-1 form-control" />
+
+                    <input id="ItemType" name="ItemType" placeholder="Item Type..." class="mb-1 form-control" />
+
+                    <input id="ItemPrice" name="ItemPrice" placeholder="Item Price..." class="mb-1 form-control" />
+
+
+
+                    <br />
+                    <button type="button" class="btn btn-success btn-block" onclick="submitItem()"><i class="fas fa-sign-in-alt"></i>Submit</button>
+                    
+
+
+                </form>
+
+            </div>
+            <div id="scroll">
+
+                <div class="col-8">
+                    <table id="tblData" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Item Id
+                                </th>
+                                <th>
+                                    Item Name
+                                </th>
+                                <th>
+                                    Item Type
+                                </th>
+                                <th>
+                                    Item Price
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                          
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+                <label class="float-left">Pages </label>
+                <select id="ddPageSize" onchange="GetItemList();">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+
+                </select>
+                <div id="pageIndex">
+
+                </div>
+                <button type="button" class="float-right" onclick="nextPage()"><i class="fas fa-edit"></i>Next</button>
+                <button type="button" class="float-right" onclick="previousPage()"><i class="fas fa-edit"></i>Previous</button>
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+    @section Scripts{
+
+        <script type="text/javascript">
+            function submitItem() {
+                var loData = new Object();
+                
+                loData.itemId = $("#ItemId").val(); 
+                loData.itemName = $('#ItemName').val();
+                loData.itemType = $('#ItemType').val();
+                loData.itemPrice = $('#ItemPrice').val();
+                
+                
+
+                // var data = $("#addItem").serialize();
+                // console.log(data);
+                //alert(data);
+                $.ajax({
+                    type: 'POST',
+                    url: '/Home/AddItems',
+                    dataType: 'json',
+                    data: loData,
+                    success: function (response) {
+
+                        if (response.isUpdate == false) {
+                            $("#ItemId").val(response.data.itemId);
+                            $('#tblData tbody').append('<tr id="tr_' + response.data.itemId + '" class="child"><td>' + response.data.itemId + '</td><td>' + response.data.itemName
+                                + '</td><td>' + response.data.itemType + '</td><td>' + response.data.itemPrice + '</td><td><button id="btn"  class="btnSelect"><i class="fas fa-edit"></i>Edit</button></td></tr>');
+                        }
+                        else {
+                            $('#tr_' + response.data.itemId).replaceWith('<tr id="tr_' + response.data.itemId + '"><td>' + response.data.itemId + '</td><td>' + response.data.itemName
+                                + '</td><td>' + response.data.itemType + '</td><td>' + response.data.itemPrice + '</td><td><button id="btn"  class="btnSelect"><i class="fas fa-edit"></i>Edit</button></td></tr>');
+                        }
+
+                        
+                    },
+                    error: function () {
+                        /*alert("Failed to receive the Data");*/
+                        console.log('Failed');
+                    }
+                })
+            }
+
+            $(document).ready(function () {
+
+                // code to read selected table row cell data (values).
+                $("#tblData").on('click', '.btnSelect', function () {
+                    // get the current row
+                    var currentRow = $(this).closest("tr");
+
+                    $('#ItemId').val($.trim(currentRow.find("td:eq(0)").text()));
+                    $('#ItemName').val($.trim(currentRow.find("td:eq(1)").text()));
+                    $('#ItemType').val($.trim(currentRow.find("td:eq(2)").text()));
+                    $('#ItemPrice').val($.trim(currentRow.find("td:eq(3)").text()));
+                });
+
+                GetItemList();
+            });
+        </script>
+
+    }
+
+
